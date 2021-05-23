@@ -37,6 +37,11 @@ jobs:
             fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
       - run: unzip pr.zip
 
+      - name: cat NR
+        id: output_result
+        run: |
+              cat ${{github.workspace}}/NR;
+              echo "::set-output name=pull_request_number::$(cat ${{github.workspace}}/NR)";
 
       - name: Find Comment
         continue-on-error: true
@@ -47,11 +52,12 @@ jobs:
           issue-number: ${{ github.event.number }} #${{ steps.output_result.outputs.pull_request_number }}
           comment-author: 'github-actions[bot]'
 
+
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.number }}
+          issue-number: ${{ steps.output_result.outputs.pull_request_number }} #${{ github.event.number }}
           # If the comment-id is blank, this will create a new comment.
           # Otherwise, it will update the comment.
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
