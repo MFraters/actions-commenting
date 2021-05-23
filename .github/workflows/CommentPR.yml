@@ -37,17 +37,27 @@ jobs:
             fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
       - run: unzip pr.zip
 
-      - name: 'Comment on PR'
-        uses: actions/github-script@v3
+
+      - name: Find Comment
+        continue-on-error: true
+        uses: peter-evans/find-comment@v1
+        id: find_comment
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            var fs = require('fs');
-            var issue_number = Number(fs.readFileSync('./NR'));
-            await github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue_number,
-              body: 'Everything is OK. Thank you for the PR!'
-            });
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.number }} #${{ steps.output_result.outputs.pull_request_number }}
+          comment-author: 'github-actions[bot]'
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.number }}
+          # If the comment-id is blank, this will create a new comment.
+          # Otherwise, it will update the comment.
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          body: |
+            Create or update this comment.
+          edit-mode: replace
+        if: success()
+
 
