@@ -49,7 +49,7 @@ jobs:
         id: find_comment
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.number }} #${{ steps.output_result.outputs.pull_request_number }}
+          issue-number: ${{ github.event.number }}
           comment-author: 'github-actions[bot]'
 
 
@@ -57,7 +57,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.output_result.outputs.pull_request_number }} #${{ github.event.number }}
+          issue-number: ${{ github.event.number }}
           # If the comment-id is blank, this will create a new comment.
           # Otherwise, it will update the comment.
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
