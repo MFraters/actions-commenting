@@ -64,6 +64,5 @@ jobs:
           body: |
             Create or update this comment.
           edit-mode: replace
-        if: success()
 
 
